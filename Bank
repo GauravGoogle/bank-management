@@ -1,0 +1,206 @@
+#include<stdio.h>
+
+struct bank
+{
+	int acno;
+	char name[20];
+	int bal;
+};
+
+void main()
+{
+	FILE *p,*p1;
+	struct bank list;
+	int size,choice,srch,amt,modify;
+	clrscr();
+
+	size=sizeof(list);
+	p=fopen("rec.dat","rb+");
+	if(p==NULL)
+	p=fopen("rec.dat","wb+");
+
+	while(choice!=8)
+	{
+		clrscr();
+		printf("\n\t\t\t\tMAIN MENU\n");
+		printf("\n\t1. ADD RECORD");
+		printf("\n\t2. SHOW ALL RECORD");
+		printf("\n\t3. SEARCH RECORD");
+		printf("\n\t4. WITHDRAW AMOUNT");
+		printf("\n\t5. DEPOSITE AMOUNT");
+		printf("\n\t6. MODIFY RECORD");
+		printf("\n\t7. DELETE RECORD");
+		printf("\n\t8. EXIT");
+		printf("\n\n\tENTER YOUR CHOICE:\t");
+		scanf("%d",&choice);
+		clrscr();
+
+		switch(choice)
+		{
+			case 1: fseek(p,0,2);
+				printf("\n\n\t\t\tENTER DETAILS:\n");
+				printf("\nEnter Account No:\t");
+				scanf("%d",&list.acno);
+				printf("\nEnter Name:\t\t");
+				scanf("%s",&list.name);
+				printf("\nEnter Balance:\t\t");
+				scanf("%d",&list.bal);
+
+				fwrite(&list,size,1,p);
+				break;
+
+			case 2: fseek(p,0,0);
+				printf("\n\n\t\t\t\tACCOUNT DETAIL");
+				printf("\n\n\t\tAccount no\tName\t\tBalance\n");
+				while(fread(&list,size,1,p)==1)
+				printf("\n\t\t%d\t\t%s\t\t%d",list.acno,list.name,list.bal);
+
+				printf("\n\n\nPress any key to go back");
+				getch();
+				break;
+
+			case 3: fseek(p,0,0);
+				printf("\n\t\t\t\tSearch Detail\n");
+				printf("\n\tEnter Account No:\t");
+				scanf("%d",&srch);
+				printf("\n\n\t\tAccount no\tName\t\tBalance\n");
+				while(fread(&list,size,1,p)==1)
+				{
+					if(srch==list.acno)
+					{
+						printf("\n\t\t%d\t\t%s\t\t%d",list.acno,list.name,list.bal);
+					}
+				}
+				printf("\n\n\nPress any key to go back");
+				getch();
+				break;
+
+			case 4: fseek(p,0,0);
+				printf("\n\t\t\t\tWithdraw Amount\n");
+				printf("\n\tEnter Account No:\t");
+				scanf("%d",&srch);
+				while(fread(&list,size,1,p)==1)
+				{
+					if(srch==list.acno)
+					{
+						printf("\n\tEnter amount to withdraw:\t");
+						scanf("%d",&amt);
+						if(amt<=list.bal)
+						{
+							fseek(p,-size,1);
+							printf("\n\n\t\t********WITHDRAW SUCCESSFULLY********");
+							list.bal-=amt;
+							fwrite(&list,size,1,p);
+						}
+						else
+						{
+							printf("\n\n\t\t\tSORRY! INSUFFICIRNT BALANCE...");
+						}
+					}
+					else
+					{
+						printf("\n\n\t\t********Account Does not exist********");
+					}
+				}
+				printf("\n\n\nPress any key to go back");
+				getch();
+				break;
+
+			case 5: fseek(p,0,0);
+				printf("\n\t\t\t\tDeposit Amount\n");
+				printf("\n\tEnter Account No:\t");
+				scanf("%d",&srch);
+				while(fread(&list,size,1,p)==1)
+				{
+					if(srch==list.acno)
+					{
+						printf("\n\tEnter amount to deposit:\t");
+						scanf("%d",&amt);
+						fseek(p,-size,1);
+						printf("\n\n\t\t********DEPOSIT SUCCESSFULLY********");
+						list.bal+=amt;
+						fwrite(&list,size,1,p);
+
+					}
+					else
+					{
+						printf("\n\n\t\t********Account Does not exist********");
+					}
+				}
+				printf("\n\n\nPress any key to go back");
+				getch();
+				break;
+
+			case 6: printf("\n\t\t\t\tMODIFY MENU\n");
+				printf("\n\t1. Account no");
+				printf("\n\t2. NAME");
+				printf("\n\n\tEnter your Choice:\t");
+				scanf("%d",&modify);
+				clrscr();
+
+				switch(modify)
+				{
+					case 1: fseek(p,0,0);
+						printf("\n\t\t\t\tModifing Account No\n");
+						printf("\n\tEnter Account No to Modify:\t");
+						scanf("%d",&srch);
+						while(fread(&list,size,1,p)==1)
+						{
+							if(srch==list.acno)
+							{
+								fseek(p,-size,1);
+								printf("\n\n\tEnter New Account No:\t");
+								scanf("%d",&list.acno);
+								fwrite(&list,size,1,p);
+								printf("\n\n\t\t\t********MODIFY SUCCESSFULLY********");
+							}
+						}
+						printf("\n\n\nPress any key to go back");
+						getch();
+						break;
+
+					case 2: fseek(p,0,0);
+						printf("\n\t\t\t\tModifing Name\n");
+						printf("\n\tEnter Account No to Modify:\t");
+						scanf("%d",&srch);
+						while(fread(&list,size,1,p)==1)
+						{
+							if(srch==list.acno)
+							{
+								fseek(p,-size,1);
+								printf("\n\n\tEnter New Name:\t");
+								scanf("%s",&list.name);
+								fwrite(&list,size,1,p);
+								printf("\n\n\t\t\t********MODIFY SUCCESSFULLY********");
+							}
+						}
+						printf("\n\n\nPress any key to go back");
+						getch();
+						break;
+				}
+
+			case 7: fseek(p,0,0);
+				p1=fopen("temp.dat","wb");
+				printf("\n\t\t\t\tDelete Account\n");
+				printf("\n\tEnter Account no to delete:\t");
+				scanf("%d",&srch);
+
+				while(fread(&list,size,1,p)==1)
+				{
+					if(srch!=list.acno)
+					fwrite(&list,size,1,p1);
+				}
+				printf("\n\n\t\t\t********DELETE SUCCESSFULLY********");
+				fclose(p);
+				fclose(p1);
+
+				remove("rec.dat");
+				rename("temp.dat","rec.dat");
+				p=fopen("rec.dat","rb+");
+				printf("\n\n\nPress any key to go back");
+				getch();
+				break;
+		}
+
+	}
+}
